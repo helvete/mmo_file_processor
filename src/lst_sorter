@@ -1,8 +1,31 @@
 #!/usr/bin/env php
 <?php
 
-foreach (new DirectoryIterator('./') as $fileInfo) {
-	if ($fileInfo->isDot()) continue;
+define('NAME_LEVEL', 2);
+if (count($argv) === 1) {
+	echo "Missing source directory parameter\n";
+	exit(2);
+}
+define('WORK_ROOT', $argv[1]);
+$base = substr(WORK_ROOT, -1) == '/'
+	? substr(WORK_ROOT, 0, -1)
+	: WORK_ROOT;
+
+define('WORK_DONE', $base . '_DONE_' . time());
+if (!file_exists(WORK_ROOT)) {
+	echo "Directory provided is not accessible\n";
+	exit(3);
+}
+if (!mkdir(WORK_DONE)) {
+	echo "Cannot write output directory\n";
+	exit(4);
+}
+
+foreach (new DirectoryIterator(WORK_ROOT) as $fileInfo) {
+	if ($fileInfo->isDot()) {
+		continue;
+	}
+
 	echo $fileInfo->getFilename() . "\n";
 }
 
