@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+
+foreach (new DirectoryIterator('./') as $fileInfo) {
+	if ($fileInfo->isDot()) continue;
+	echo $fileInfo->getFilename() . "\n";
+}
+
+// rename
+
+// store hash per filename
+
+// sort
+
+// try to find duplicities - eradicate them
+
+// flatten
+?>
