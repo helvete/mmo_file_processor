@@ -19,7 +19,6 @@ if (!file_exists(WORK_ROOT)) {
 
 exec('/usr/bin/find '.WORK_ROOT.' -type f', $lines);
 $total = $current = count($lines);
-$cache = array();
 $rotate = array('', '|', '/', '-', '\\', '|', '/', '-', '\\');
 
 if (!mkdir(WORK_DONE)) {
@@ -42,7 +41,7 @@ function traverseDeep($loc, $level = NAME_LEVEL, $pref = '') {
 		if ($level !== 0) {
 			traverseDeep("{$loc}/{$name}", $level - 1, "$pref\t");
 		} else {
-			process($loc, $name);
+			process("$loc/$name", $name);
 		}
 	}
 }
@@ -53,43 +52,33 @@ function getName($source) {
 }
 
 
-function padIter($iter) {
-	if ($iter > 99) {
-		return "_0$iter";
-	}
-	if ($iter > 9) {
-		return "_00$iter";
-	}
-	return "_000$iter";
-}
-
-
-function process($loc, $dirName, $iter = 0) {
-	global $total, $current, $cache, $rotate;
-	foreach (new DirectoryIterator("$loc/$dirName") as $fileInfo) {
+function process($loc, $name) {
+	global $total, $current, $rotate;
+	foreach (new DirectoryIterator($loc) as $fileInfo) {
 		if ($fileInfo->isDot()) {
 			continue;
 		}
 		if ($fileInfo->isDir()) {
-			continue;
-			//$iter = process("$loc/".$fileInfo->getFilename(), $dirName, $iter);
+			return process("{$loc}/" . $fileInfo->getFilename(), $name);
 		}
-		$prevName = $fileInfo->getFilename();
 		$ext = $fileInfo->getExtension();
+		$prevName = $fileInfo->getBaseName(".{$ext}");
+		$newName = WORK_DONE ."/". getName($name) ."_". getName($prevName);
 
-		$name = getName($dirName) . padIter($iter);
-		$res = copy("$loc/$dirName/$prevName", WORK_DONE . "/{$name}.{$ext}");
+		if (file_exists("$newName.$ext")) {
+			file_put_contents(WORK_DONE . "/!!debug", "$newName\n", FILE_APPEND);
+		}
+
+		$res = copy("{$loc}/{$prevName}.{$ext}", "{$newName}.{$ext}");
 		if (!$res) {
-			echo "\nError: Cannot copy file {$name}.\n";
-			exit(2);
+			echo "\nError: Cannot copy file {$newName}.\n";
+			exit(5);
 		}
 		system('clear');
 		$curr = ($total - --$current);
 		echo "Processing file ". $curr . " of " . $total . "  " . $rotate[$curr % 9];
-		$iter++;
 	}
 
-	return $iter;
+	return null;
 }
-
 ?>
