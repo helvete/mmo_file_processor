@@ -19,17 +19,16 @@ if (!file_exists(WORK_ROOT)) {
 
 exec('/usr/bin/find '.WORK_ROOT.' -type f', $lines);
 $total = $current = count($lines);
-$rotate = array('', '|', '/', '-', '\\', '|', '/', '-', '\\');
 
 if (!mkdir(WORK_DONE)) {
-	echo "Cannot write output directory\n";
+	echo "Cannot create output directory\n";
 	exit(4);
 }
 
 traverseDeep(WORK_ROOT);
 echo "\nDone!\n";
 
-function traverseDeep($loc, $level = NAME_LEVEL, $pref = '') {
+function traverseDeep($loc, $level = NAME_LEVEL) {
 	foreach (new DirectoryIterator($loc) as $fileInfo) {
 		if ($fileInfo->isDot()) {
 			continue;
@@ -39,7 +38,7 @@ function traverseDeep($loc, $level = NAME_LEVEL, $pref = '') {
 		}
 		$name = $fileInfo->getFilename();
 		if ($level !== 0) {
-			traverseDeep("{$loc}/{$name}", $level - 1, "$pref\t");
+			traverseDeep("{$loc}/{$name}", $level - 1);
 		} else {
 			process("$loc/$name", $name);
 		}
@@ -53,7 +52,8 @@ function getName($source) {
 
 
 function process($loc, $name) {
-	global $total, $current, $rotate;
+	global $total, $current;
+	$rotate = array('', '|', '/', '-', '\\', '|', '/', '-', '\\');
 	foreach (new DirectoryIterator($loc) as $fileInfo) {
 		if ($fileInfo->isDot()) {
 			continue;
@@ -76,9 +76,10 @@ function process($loc, $name) {
 		}
 		system('clear');
 		$curr = ($total - --$current);
-		echo "Processing file ". $curr . " of " . $total . "  " . $rotate[$curr % 9];
+
+		echo "Processing ". $rotate[$curr % 9] . ' ' . (int)($curr / $total * 100) . '%';
 	}
 
-	return null;
+	return;
 }
 ?>
