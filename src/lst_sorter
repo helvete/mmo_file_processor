@@ -1,7 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-define('NAME_LEVEL', 1);
 if (count($argv) === 1) {
 	echo "Missing source directory parameter\n";
 	exit(2);
@@ -25,33 +24,15 @@ if (!mkdir(WORK_DONE)) {
 	exit(4);
 }
 
-traverseDeep(WORK_ROOT);
+process(WORK_ROOT);
 echo "\nDone!\n";
 
-function traverseDeep($loc, $level = NAME_LEVEL) {
-	foreach (new DirectoryIterator($loc) as $fileInfo) {
-		if ($fileInfo->isDot()) {
-			continue;
-		}
-		if (!$fileInfo->isDir()) {
-			continue;
-		}
-		$name = $fileInfo->getFilename();
-		if ($level !== 0) {
-			traverseDeep("{$loc}/{$name}", $level - 1);
-		} else {
-			process("$loc/$name", $name);
-		}
-	}
-}
-
-
 function getName($source) {
-	return preg_replace('/[^a-zA-Z0-9]/', '', $source);
+	return preg_replace('/[^a-zA-Z0-9_]/', '', $source);
 }
 
 
-function process($loc, $name) {
+function process($loc, $name = '') {
 	global $total, $current;
 	$rotate = array('', '|', '/', '-', '\\', '|', '/', '-', '\\');
 	foreach (new DirectoryIterator($loc) as $fileInfo) {
@@ -59,7 +40,9 @@ function process($loc, $name) {
 			continue;
 		}
 		if ($fileInfo->isDir()) {
-			return process("{$loc}/" . $fileInfo->getFilename(), $name);
+			$dirName = $fileInfo->getFilename();
+			process("{$loc}/{$dirName}", $name ? "{$name}_{$dirName}" : $dirName);
+			continue;
 		}
 		$ext = $fileInfo->getExtension();
 		$prevName = $fileInfo->getBaseName(".{$ext}");
@@ -79,7 +62,4 @@ function process($loc, $name) {
 
 		echo "Processing ". $rotate[$curr % 9] . ' ' . (int)($curr / $total * 100) . '%';
 	}
-
-	return;
 }
-?>
