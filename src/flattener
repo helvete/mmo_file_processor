@@ -24,7 +24,8 @@ if (!mkdir(WORK_DONE)) {
 }
 
 process($src);
-echo "\nDone!\n";
+system('clear');
+echo PHP_EOL . "Done! See " . WORK_DONE . PHP_EOL;
 
 
 function getName($source) {
