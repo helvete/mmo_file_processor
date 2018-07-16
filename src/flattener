@@ -5,18 +5,17 @@ if (count($argv) === 1) {
 	echo "Missing source directory parameter\n";
 	exit(2);
 }
-define('WORK_ROOT', $argv[1]);
-$base = substr(WORK_ROOT, -1) == '/'
-	? substr(WORK_ROOT, 0, -1)
-	: WORK_ROOT;
+$src = substr($argv[1], -1) == '/'
+	? substr($argv[1], 0, -1)
+	: $argv[1];
 
-define('WORK_DONE', $base . '_DONE_' . time());
-if (!file_exists(WORK_ROOT)) {
+define('WORK_DONE', "{$src}_DONE_" . time());
+if (!file_exists($src)) {
 	echo "Directory provided is not accessible\n";
 	exit(3);
 }
 
-exec('/usr/bin/find ' . WORK_ROOT . ' -type f', $lines);
+exec("/usr/bin/find {$src} -type f", $lines);
 $total = $current = count($lines);
 
 if (!mkdir(WORK_DONE)) {
@@ -24,7 +23,7 @@ if (!mkdir(WORK_DONE)) {
 	exit(4);
 }
 
-process(WORK_ROOT);
+process($src);
 echo "\nDone!\n";
 
 
