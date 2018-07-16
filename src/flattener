@@ -60,7 +60,8 @@ function process($loc, $name = '') {
 		system('clear');
 		$curr = ($total - --$current);
 
-		echo "Processing " . progress($curr) . ' ' . (int)($curr / $total * 100) . '%';
+		echo "Processing " . progress($curr) . ' '
+			. (int)($curr / $total * 100) . '%';
 	}
 }
 
