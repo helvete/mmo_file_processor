@@ -16,7 +16,7 @@ if (!file_exists(WORK_ROOT)) {
 	exit(3);
 }
 
-exec('/usr/bin/find '.WORK_ROOT.' -type f', $lines);
+exec('/usr/bin/find ' . WORK_ROOT . ' -type f', $lines);
 $total = $current = count($lines);
 
 if (!mkdir(WORK_DONE)) {
@@ -26,6 +26,7 @@ if (!mkdir(WORK_DONE)) {
 
 process(WORK_ROOT);
 echo "\nDone!\n";
+
 
 function getName($source) {
 	return preg_replace('/[^a-zA-Z0-9_]/', '', $source);
@@ -45,7 +46,7 @@ function process($loc, $name = '') {
 		}
 		$ext = $fileInfo->getExtension();
 		$prevName = $fileInfo->getBaseName(".{$ext}");
-		$newName = WORK_DONE ."/". getName($name) ."_". getName($prevName);
+		$newName = WORK_DONE . "/" . getName($name) . "_" . getName($prevName);
 
 		if (file_exists("$newName.$ext")) {
 			$newName .= '-' . md5(time());
@@ -59,7 +60,7 @@ function process($loc, $name = '') {
 		system('clear');
 		$curr = ($total - --$current);
 
-		echo "Processing ". progress($curr) . ' ' . (int)($curr / $total * 100) . '%';
+		echo "Processing " . progress($curr) . ' ' . (int)($curr / $total * 100) . '%';
 	}
 }
 
