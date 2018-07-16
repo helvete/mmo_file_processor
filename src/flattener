@@ -34,7 +34,6 @@ function getName($source) {
 
 function process($loc, $name = '') {
 	global $total, $current;
-	$rotate = array('', '|', '/', '-', '\\', '|', '/', '-', '\\');
 	foreach (new DirectoryIterator($loc) as $fileInfo) {
 		if ($fileInfo->isDot()) {
 			continue;
@@ -60,6 +59,12 @@ function process($loc, $name = '') {
 		system('clear');
 		$curr = ($total - --$current);
 
-		echo "Processing ". $rotate[$curr % 9] . ' ' . (int)($curr / $total * 100) . '%';
+		echo "Processing ". progress($curr) . ' ' . (int)($curr / $total * 100) . '%';
 	}
+}
+
+
+function progress($modMe) {
+	$rotate = array('', '|', '/', '-', '\\');
+	return $rotate[$modMe % 5];
 }
