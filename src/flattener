@@ -10,8 +10,9 @@ if (!$src) {
 	err("The directory provided is not accessible", 3);
 }
 
+$showProgress = DIRECTORY_SEPARATOR !== '\\'; // no progress bar for windows
 try {
-    $fl = new helvete\Tools\Flattener($src);
+    $fl = new helvete\Tools\Flattener($src, $showProgress);
     $fl->transmogrify();
     echo PHP_EOL;
 } catch (Exception $e) {
