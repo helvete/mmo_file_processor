@@ -25,7 +25,7 @@ class Flattener {
     static protected function asmblTarDir($src) {
         $tar = "{$src}_DONE_" . time();
         if (!mkdir($tar)) {
-	        throw new \Exception("Cannot create output directory", 4);
+            throw new \Exception("Cannot create output directory", 4);
         }
 
         return $tar;
@@ -33,36 +33,36 @@ class Flattener {
 
     public function transmogrify($root = null, $name = '') {
         $root = $root ?: $this->src;
-	    foreach (new \DirectoryIterator($root) as $fileInfo) {
-		    if ($fileInfo->isDot()) {
-			    continue;
-		    }
-		    if ($fileInfo->isDir()) {
-			    $dirName = $fileInfo->getFilename();
-			    $this->transmogrify(
+        foreach (new \DirectoryIterator($root) as $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+            if ($fileInfo->isDir()) {
+                $dirName = $fileInfo->getFilename();
+                $this->transmogrify(
                     "{$root}/{$dirName}",
                     $name ? "{$name}_{$dirName}" : $dirName
                 );
-			    continue;
-		    }
-		    $ext = $fileInfo->getExtension();
-		    $prev = $fileInfo->getBaseName(".{$ext}");
-		    $new = "{$this->tar}/" . self::name($name) . "_" . self::name($prev);
+                continue;
+            }
+            $ext = $fileInfo->getExtension();
+            $prev = $fileInfo->getBaseName(".{$ext}");
+            $new = "{$this->tar}/" . self::name($name) . "_" . self::name($prev);
 
-		    if (file_exists("$new.$ext")) {
-		        $new .= '-' . md5(time());
-		    }
+            if (file_exists("$new.$ext")) {
+                $new .= '-' . md5(time());
+            }
 
-		    $res = copy("{$root}/{$prev}.{$ext}", "{$new}.{$ext}");
-		    if (!$res) {
-	            throw new \Exception("Error: Cannot copy file {$new}", 5);
-		    }
+            $res = copy("{$root}/{$prev}.{$ext}", "{$new}.{$ext}");
+            if (!$res) {
+                throw new \Exception("Error: Cannot copy file {$new}", 5);
+            }
             $this->prgrs();
-	    }
+        }
     }
 
     static public function name($source) {
-	    return preg_replace('/[^a-zA-Z0-9_]/', '', $source);
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $source);
     }
 
     protected function prgrs() {

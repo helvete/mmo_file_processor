@@ -3,11 +3,11 @@
 include(__DIR__ . '/Flattener.php');
 
 if (count($argv) === 1) {
-	err("Missing mandatory source directory parameter", 2);
+    err("Missing mandatory source directory parameter", 2);
 }
 $src = realpath($argv[1]);
 if (!$src) {
-	err("The directory provided is not accessible", 3);
+    err("The directory provided is not accessible", 3);
 }
 
 $showProgress = DIRECTORY_SEPARATOR !== '\\'; // no progress bar for windows
