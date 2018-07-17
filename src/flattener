@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+include(__DIR__ . '/Flattener.php');
 
 if (count($argv) === 1) {
 	err("Missing mandatory source directory parameter", 2);
@@ -8,62 +9,14 @@ $src = realpath($argv[1]);
 if (!$src) {
 	err("The directory provided is not accessible", 3);
 }
-define('WORK_DONE', "{$src}_DONE_" . time());
-if (!@mkdir(WORK_DONE)) {
-	err("Cannot create output directory", 4);
+
+try {
+    $fl = new helvete\Tools\Flattener($src);
+    $fl->transmogrify();
+    echo PHP_EOL;
+} catch (Exception $e) {
+    err($e->getMessage(), $e->getCode());
 }
-
-exec("/usr/bin/find {$src} -type f", $lines);
-$total = $current = count($lines);
-
-process($src);
-system('clear');
-echo PHP_EOL . "Done! See " . WORK_DONE . PHP_EOL;
-
-
-function getName($source) {
-	return preg_replace('/[^a-zA-Z0-9_]/', '', $source);
-}
-
-
-function process($loc, $name = '') {
-	global $total, $current;
-	foreach (new DirectoryIterator($loc) as $fileInfo) {
-		if ($fileInfo->isDot()) {
-			continue;
-		}
-		if ($fileInfo->isDir()) {
-			$dirName = $fileInfo->getFilename();
-			process("{$loc}/{$dirName}", $name ? "{$name}_{$dirName}" : $dirName);
-			continue;
-		}
-		$ext = $fileInfo->getExtension();
-		$prevName = $fileInfo->getBaseName(".{$ext}");
-		$newName = WORK_DONE . "/" . getName($name) . "_" . getName($prevName);
-
-		if (file_exists("$newName.$ext")) {
-			$newName .= '-' . md5(time());
-		}
-
-		$res = copy("{$loc}/{$prevName}.{$ext}", "{$newName}.{$ext}");
-		if (!$res) {
-			echo "\nError: Cannot copy file {$newName}.\n";
-			exit(5);
-		}
-		system('clear');
-		$curr = ($total - --$current);
-
-		echo "Processing " . progress($curr) . ' '
-			. (int)($curr / $total * 100) . '%';
-	}
-}
-
-
-function progress($modMe) {
-	$rotate = array('', '|', '/', '-', '\\');
-	return $rotate[$modMe % 5];
-}
-
 
 function err($msg = '', $exitCode = 127) {
     echo "ERROR: $msg" . PHP_EOL;
