@@ -2,26 +2,19 @@
 <?php
 
 if (count($argv) === 1) {
-	echo "Missing source directory parameter\n";
-	exit(2);
+	err("Missing mandatory source directory parameter", 2);
 }
-$src = substr($argv[1], -1) == '/'
-	? substr($argv[1], 0, -1)
-	: $argv[1];
-
+$src = realpath($argv[1]);
+if (!$src) {
+	err("The directory provided is not accessible", 3);
+}
 define('WORK_DONE', "{$src}_DONE_" . time());
-if (!file_exists($src)) {
-	echo "Directory provided is not accessible\n";
-	exit(3);
+if (!@mkdir(WORK_DONE)) {
+	err("Cannot create output directory", 4);
 }
 
 exec("/usr/bin/find {$src} -type f", $lines);
 $total = $current = count($lines);
-
-if (!mkdir(WORK_DONE)) {
-	echo "Cannot create output directory\n";
-	exit(4);
-}
 
 process($src);
 system('clear');
@@ -69,4 +62,10 @@ function process($loc, $name = '') {
 function progress($modMe) {
 	$rotate = array('', '|', '/', '-', '\\');
 	return $rotate[$modMe % 5];
+}
+
+
+function err($msg = '', $exitCode = 127) {
+    echo "ERROR: $msg" . PHP_EOL;
+    exit($exitCode);
 }
