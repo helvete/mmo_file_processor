@@ -74,4 +74,8 @@ class Flattener {
             $this->prg += self::PRG_STEP;
         }
     }
+
+    public function getTot() {
+        return $this->tot;
+    }
 }

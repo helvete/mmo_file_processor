@@ -12,9 +12,12 @@ if (!$src) {
 
 $showProgress = DIRECTORY_SEPARATOR !== '\\'; // no progress bar for windows
 try {
+    $time = -microtime(true);
     $fl = new helvete\Tools\Flattener($src, $showProgress);
     $fl->transmogrify();
-    echo PHP_EOL;
+    $time += microtime(true);
+    $time = number_format($time, 2);
+    echo PHP_EOL . "Processed {$fl->getTot()} files in {$time} sec." . PHP_EOL;
 } catch (Exception $e) {
     err($e->getMessage(), $e->getCode());
 }
