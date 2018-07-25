@@ -18,6 +18,7 @@ try {
     $time = number_format($time, 2);
     echo PHP_EOL . "Processed {$fl->getTot()} files in {$time} sec. using "
         . memory_get_peak_usage(true) / 1024 . "kB memory" . PHP_EOL;
+    printDupla($fl);
 } catch (Exception $e) {
     err($e->getMessage(), $e->getCode());
 }
@@ -26,3 +27,15 @@ function err($msg = '', $exitCode = 127) {
     echo "ERROR: $msg" . PHP_EOL;
     exit($exitCode);
 }
+
+function printDupla($fl) {
+    $dup = $fl->getDupLst();
+    if (!$cnt = count($dup)) {
+        return;
+    }
+    echo "Duplicit files({$cnt}): " . PHP_EOL;
+    foreach($dup as $fn) {
+        echo "\t$fn" . PHP_EOL;
+    }
+}
+
