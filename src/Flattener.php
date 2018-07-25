@@ -15,15 +15,15 @@ class Flattener {
 
     public function __construct($srcDir, $progress = true) {
         $this->src = $srcDir;
-        $this->tar = self::asmblTarDir($srcDir);
+        $this->tar = $this->asmblTarDir();
         if ($progress) {
             exec("/usr/bin/find {$this->src} -type f", $lines);
             $this->tot = count($lines);
         }
     }
 
-    static protected function asmblTarDir($src) {
-        $tar = "{$src}_DONE_" . time();
+    protected function asmblTarDir() {
+        $tar = "{$this->src}_DONE_" . time();
         if (!mkdir($tar)) {
             throw new \Exception("Cannot create output directory", 4);
         }
