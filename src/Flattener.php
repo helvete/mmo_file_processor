@@ -49,8 +49,8 @@ class Flattener {
             $prev = $fileInfo->getBaseName(".{$ext}");
             $new = "{$this->tar}/" . self::name($name) . "_" . self::name($prev);
 
-            if (file_exists("$new.$ext")) {
-                $new .= '-' . md5(time());
+            if (file_exists("{$new}.{$ext}")) {
+                $new .= '-qqq-' . md5(time());
             }
 
             $res = copy("{$root}/{$prev}.{$ext}", "{$new}.{$ext}");
