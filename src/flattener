@@ -16,7 +16,8 @@ try {
     $fl->transmogrify();
     $time += microtime(true);
     $time = number_format($time, 2);
-    echo PHP_EOL . "Processed {$fl->getTot()} files in {$time} sec." . PHP_EOL;
+    echo PHP_EOL . "Processed {$fl->getTot()} files in {$time} sec. using "
+        . memory_get_peak_usage(true) / 1024 . "kB memory" . PHP_EOL;
 } catch (Exception $e) {
     err($e->getMessage(), $e->getCode());
 }
